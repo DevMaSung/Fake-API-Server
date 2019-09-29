@@ -1,0 +1,109 @@
+﻿<style>
+    .list-group{
+    max-height: 300px;
+    margin-bottom: 10px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+}
+</style>
+<h1>Fake Json List</h1>
+<div class="list-group" id="divList">
+</div>
+
+
+<h3>KeyName</h3><p>http://{Fake-Server-Url}/api/json/get/{KeyName}</p>
+<input id="txtKEY" type="text" class="form-control" style="width:100%;max-width:100%;">
+<h3>JSON</h3>
+<textarea id="txtJSON" class="form-control" style="width:100%;max-width:100%;height:300px;"></textarea>
+<h2></h2>
+<button type="button" class="btn btn-primary btn-lg" style="width:100%;max-width:100%;" onclick="$fn.Save()">저장!</button>
+<script>
+    var $fn = (function () {
+        var functionInit = {
+            Save: function () {
+                var txtkey = $("#txtKEY").val()
+                var txtjson = $("#txtJSON").val();
+                if (!$fn.IsJsonString(txtjson)) {
+                    alert('제이슨이 아니네요..')
+                    return;
+                } else if (!txtkey) {
+                    alert('Key를 입력해주세요')
+                    return;
+                }
+
+                if (confirm('정말루 저장?')) {
+                    $.ajax({
+                        url: '/api/json/save', // 요청 할 주소
+                        type: 'POST', // GET, PUT
+                        data: {
+                            key: txtkey,
+                            JSON: (txtjson)
+                        },// 전송할 데이터
+                        success: function (jqXHR) {
+                            $fn.List()
+                            $("#txtKEY").val("")
+                            $("#txtJSON").val("");
+                            alert('성공!');
+                        },// 요청 완료 시
+                        error: function (jqXHR) {
+                            alert('실패 ㅜㅜ 디버깅해서 좀 찾아주세여')
+                        },// 요청 실패.
+                    });
+                }
+
+            },
+            List: function () {
+                $.ajax({
+                    url: '/api/json/list', // 요청 할 주소
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data)
+                        var append = "";
+                        data.forEach(function (item) {
+                            var filename = item.match(/[^\\/]+\.[^\\/]+$/)[0].replace('.json', "");
+                            $("#divList").append($("<a></a>").attr('href', "javascript:$fn.GetJSON('" + filename + "')").addClass("list-group-item").html(filename))
+                        })
+                    },// 요청 완료 시
+                    error: function (jqXHR) {
+                        alert('실패 ㅜㅜ 디버깅해서 좀 찾아주세여')
+                    },// 요청 실패.
+                });
+            },
+            GetJSON: function (filename) {
+                $.ajax({
+                    url: '/api/json/Get/' + filename, // 요청 할 주소
+                    type: 'GET',
+                    success: function (data) {
+                        $("#txtKEY").val(filename)
+                        $("#txtJSON").val(JSON.parse(data.JSON));
+                    },// 요청 완료 시
+                    error: function (jqXHR) {
+                        alert('실패 ㅜㅜ 디버깅해서 좀 찾아주세여')
+                    },// 요청 실패.
+                });
+            },
+            IsJsonString: function (str) {
+                try {
+                    JSON.parse(str);
+                } catch (e) {
+                    return false;
+                }
+                return true;
+            },
+            docReady: function (fn) {
+                // see if DOM is already available
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    // call on next available tick
+                    setTimeout(fn, 1);
+                } else {
+                    document.addEventListener("DOMContentLoaded", fn);
+                }
+            }
+        }
+        return functionInit
+    })()
+    
+
+    $fn.docReady($fn.List);
+   
+</script>
