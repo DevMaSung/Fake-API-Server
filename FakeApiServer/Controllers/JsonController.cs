@@ -65,7 +65,7 @@ namespace FakeApiServer.Controllers
                 using (StreamWriter file = File.CreateText(string.Format(saveJson, root, jsonKey.key)))
                 using (JsonTextWriter writer = new JsonTextWriter(file))
                 {
-                    jsonKey.JSON.WriteTo(writer);
+                    JObject.Parse(jsonKey.JSON).WriteTo(writer);
                 }
                 return "1";
             }catch(Exception e)
@@ -78,7 +78,7 @@ namespace FakeApiServer.Controllers
         #region class
         public class JsonModel {
             public string key { get; set; }
-            public JObject JSON { get; set; }
+            public string JSON { get; set; }
         }
 
         #endregion

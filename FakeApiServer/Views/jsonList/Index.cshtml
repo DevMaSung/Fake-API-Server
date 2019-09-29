@@ -53,6 +53,7 @@
 
             },
             List: function () {
+                $("#divList").html("");
                 $.ajax({
                     url: '/api/json/list', // 요청 할 주소
                     type: 'GET',
@@ -75,7 +76,7 @@
                     type: 'GET',
                     success: function (data) {
                         $("#txtKEY").val(filename)
-                        $("#txtJSON").val(JSON.parse(data.JSON));
+                        $("#txtJSON").val(JSON.stringify(data, undefined, 4));
                     },// 요청 완료 시
                     error: function (jqXHR) {
                         alert('실패 ㅜㅜ 디버깅해서 좀 찾아주세여')
