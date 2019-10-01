@@ -2,7 +2,7 @@
 
 1. Git Clone https://github.com/DevMaSung/Fake-API-Server.git
 
-2. Open Visual Studio
+2. Open VS
 
 3. Solution Build
 
